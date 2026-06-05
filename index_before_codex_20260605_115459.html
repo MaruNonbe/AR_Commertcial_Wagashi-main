@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>和菓子ARギフト A/Bセット</title>
+  <meta name="description" content="和菓子ギフトをスマートフォンのARで確認できる多言語対応デモです。">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-HM4JZPG0WX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag("js", new Date());
+    gtag("config", "G-HM4JZPG0WX");
+  </script>
+  <style>
+    :root {
+      color-scheme: light;
+      --brand: #2f7dbd;
+      --brand-dark: #1f5f92;
+      --ink: #1f2933;
+      --muted: #667085;
+      --line: #d8e2ef;
+      --bg: #f4f7fb;
+      --card: #fff;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans JP", "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.75;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #fff 0%, #eef7ff 100%);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .container {
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 24px 18px 32px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 22px;
+      box-shadow: 0 8px 24px rgba(16, 24, 40, .06);
+    }
+
+    h1 {
+      margin: 0 0 12px;
+      font-size: clamp(1.6rem, 4vw, 2.4rem);
+      line-height: 1.3;
+    }
+
+    .lead { font-size: 1.05rem; }
+
+    .language-row,
+    .voice-row,
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin: 18px 0;
+    }
+
+    label { font-weight: 700; }
+
+    select,
+    button,
+    .ar-btn {
+      min-height: 44px;
+      border-radius: 8px;
+      border: 1px solid var(--brand);
+      padding: 10px 14px;
+      font-size: 1rem;
+    }
+
+    button,
+    .ar-btn {
+      background: var(--brand);
+      color: #fff;
+      cursor: pointer;
+      text-decoration: none;
+      text-align: center;
+      font-weight: 700;
+    }
+
+    button.secondary {
+      background: #fff;
+      color: var(--brand);
+    }
+
+    button:hover,
+    .ar-btn:hover {
+      background: var(--brand-dark);
+      color: #fff;
+    }
+
+    .section {
+      margin-top: 22px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+    }
+
+    .set-description {
+      background: #f7fbff;
+      border-left: 4px solid var(--brand);
+      padding: 14px 16px;
+      border-radius: 8px;
+    }
+
+    .note {
+      color: var(--muted);
+      font-size: .92rem;
+    }
+
+    .footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: .85rem;
+      margin-top: 24px;
+    }
+
+    @media (max-width: 600px) {
+      .container { padding: 18px 12px 28px; }
+      .card { padding: 18px 14px; border-radius: 10px; }
+      .language-row,
+      .voice-row,
+      .btn-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      select,
+      button,
+      .ar-btn { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="container">
+      <h1 id="title">和菓子ARギフト A/Bセット</h1>
+      <p class="lead" id="mainText"></p>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="card" aria-label="和菓子ARデモ">
+      <div class="language-row">
+        <label for="languageSelect">Language</label>
+        <select id="languageSelect" onchange="changeLanguage()">
+          <option value="ja">日本語</option>
+          <option value="en">English</option>
+          <option value="zh">中文</option>
+          <option value="ko">한국어</option>
+        </select>
+      </div>
+
+      <p id="guideText"></p>
+
+      <div class="voice-row" aria-label="音声操作">
+        <button id="playVoiceBtn" type="button" onclick="playVoice()">音声を再生</button>
+        <button id="stopVoiceBtn" class="secondary" type="button" onclick="stopVoice()">停止</button>
+      </div>
+
+      <div class="section">
+        <h2>AR</h2>
+        <div class="btn-row">
+          <a id="setABtn" class="ar-btn ar-a" href="https://www.dropbox.com/scl/fi/5q835qy92gp4z1yizxg9s/wagashi_A.usdz?dl=1" onclick="trackEvent('open_ar_set_a')">Aセットを見る</a>
+          <a id="setBBtn" class="ar-btn ar-b" href="https://www.dropbox.com/scl/fi/kvt216g3yshp1p3ytsjin/wagashi_B.usdz?rlkey=g0z8bqhcqx86y9jpn1lkkyhgc&amp;st=ke6yomib&amp;dl=1" onclick="trackEvent('open_ar_set_b')">Bセットを見る</a>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>Gift set</h2>
+        <p id="setText" class="set-description"></p>
+      </div>
+
+      <p id="noteText" class="note section"></p>
+    </section>
+
+    <footer class="footer">
+      <p>© Freedom. AR/VR・WebAR制作 / 和菓子ARデモ</p>
+    </footer>
+  </main>
+
+  <script>
+    const contents = {
+      ja: {
+        htmlLang: "ja",
+        title: "和菓子ARギフト A/Bセット",
+        mainText: "日本の伝統菓子「和菓子」を、スマートフォンやタブレットのARでお楽しみいただけます。Aセット・Bセットからお好みの和菓子ギフトを選ぶと、現実空間に和菓子の3Dモデルが表示されます。贈り物のイメージ確認、店頭PR、観光案内、SNS投稿などにご活用ください。",
+        guideText: "下のボタンからAセットまたはBセットを選ぶと、AR表示が開きます。iPhoneやiPadではSafariでご利用ください。",
+        setText: "Aセット：上品で華やかな和菓子ギフトです。季節の贈り物や記念品におすすめです。<br>Bセット：落ち着いた雰囲気の和菓子ギフトです。お茶席や観光土産の紹介に適しています。",
+        noteText: "※AR表示には対応端末が必要です。iPhone / iPad では Safari での利用を推奨します。音声は端末やブラウザの設定により再生されない場合があります。",
+        playLabel: "音声を再生",
+        stopLabel: "停止",
+        setALabel: "Aセットを見る",
+        setBLabel: "Bセットを見る",
+        voiceText: "和菓子ARギフトのご案内です。日本の伝統菓子、和菓子を、スマートフォンやタブレットのARでご覧いただけます。AセットとBセットからお好みのギフトを選ぶと、現実の空間に和菓子の3Dモデルが表示されます。贈り物の確認、店頭での紹介、観光案内などにご活用ください。iPhoneやiPadでは、Safariでのご利用をおすすめします。",
+        voiceLang: "ja-JP",
+        voiceRate: 0.82,
+        voicePitch: 1
+      },
+      en: {
+        htmlLang: "en",
+        title: "Wagashi AR Gift Set A / B",
+        mainText: "Enjoy traditional Japanese sweets, wagashi, in augmented reality on your smartphone or tablet. Choose Set A or Set B to place a 3D wagashi gift model in your real space. This can be used for gift previews, in-store promotion, tourism guidance, and social media sharing.",
+        guideText: "Tap Set A or Set B below to open the AR view. On iPhone or iPad, please use Safari.",
+        setText: "Set A: An elegant and colorful wagashi gift set, suitable for seasonal gifts and commemorative items.<br>Set B: A calm and refined wagashi gift set, suitable for tea gatherings, tourism souvenirs, and shop displays.",
+        noteText: "* AR viewing requires a compatible device. Safari is recommended on iPhone / iPad. Voice playback may not work depending on your device or browser settings.",
+        playLabel: "Play voice",
+        stopLabel: "Stop",
+        setALabel: "View Set A",
+        setBLabel: "View Set B",
+        voiceText: "Welcome to the Wagashi AR gift guide. You can enjoy traditional Japanese sweets in augmented reality on your smartphone or tablet. Choose Set A or Set B, and a 3D wagashi gift model will appear in your real space. This experience is useful for gift previews, in-store promotion, tourism guidance, and social media sharing. On iPhone or iPad, please open this page in Safari.",
+        voiceLang: "en-US",
+        voiceRate: 0.88,
+        voicePitch: 1
+      },
+      zh: {
+        htmlLang: "zh-CN",
+        title: "和菓子 AR 礼盒 A / B 套装",
+        mainText: "您可以通过智能手机或平板电脑的 AR 功能，欣赏日本传统点心“和菓子”。选择 A 套装或 B 套装后，和菓子礼盒的 3D 模型会显示在现实空间中。可用于礼品预览、店铺宣传、观光介绍和社交媒体分享。",
+        guideText: "请点击下方的 A 套装或 B 套装按钮，打开 AR 显示。iPhone 和 iPad 用户建议使用 Safari。",
+        setText: "A 套装：精致而华丽的和菓子礼盒，适合季节礼品和纪念品。<br>B 套装：沉稳雅致的和菓子礼盒，适合茶席、观光伴手礼和店铺介绍。",
+        noteText: "※AR 显示需要兼容设备。iPhone / iPad 建议使用 Safari。根据设备或浏览器设置，语音可能无法播放。",
+        playLabel: "播放语音",
+        stopLabel: "停止",
+        setALabel: "查看 A 套装",
+        setBLabel: "查看 B 套装",
+        voiceText: "欢迎使用和菓子 AR 礼盒导览。您可以通过智能手机或平板电脑，在现实空间中欣赏日本传统点心和菓子的 3D 模型。请选择 A 套装或 B 套装，用于礼品预览、店铺宣传、观光介绍和社交媒体分享。iPhone 和 iPad 用户建议使用 Safari。",
+        voiceLang: "zh-CN",
+        voiceRate: 0.82,
+        voicePitch: 1
+      },
+      ko: {
+        htmlLang: "ko",
+        title: "화과자 AR 선물 세트 A / B",
+        mainText: "스마트폰이나 태블릿의 AR 기능으로 일본 전통 과자인 화과자를 감상할 수 있습니다. A 세트 또는 B 세트를 선택하면, 실제 공간에 화과자 선물 세트의 3D 모델이 표시됩니다. 선물 미리보기, 매장 홍보, 관광 안내, SNS 공유 등에 활용할 수 있습니다.",
+        guideText: "아래 버튼에서 A 세트 또는 B 세트를 선택하면 AR 화면이 열립니다. iPhone과 iPad에서는 Safari 사용을 권장합니다.",
+        setText: "A 세트: 고급스럽고 화사한 화과자 선물 세트입니다. 계절 선물이나 기념품에 잘 어울립니다.<br>B 세트: 차분하고 세련된 분위기의 화과자 선물 세트입니다. 다과 모임, 관광 기념품, 매장 소개에 적합합니다.",
+        noteText: "※AR 표시는 호환되는 기기가 필요합니다. iPhone / iPad에서는 Safari 사용을 권장합니다. 기기나 브라우저 설정에 따라 음성이 재생되지 않을 수 있습니다.",
+        playLabel: "음성 재생",
+        stopLabel: "정지",
+        setALabel: "A 세트 보기",
+        setBLabel: "B 세트 보기",
+        voiceText: "화과자 AR 선물 세트 안내입니다. 스마트폰이나 태블릿에서 일본 전통 과자인 화과자의 3D 모델을 실제 공간에 표시할 수 있습니다. A 세트와 B 세트 중 원하는 세트를 선택해 보세요. 선물 미리보기, 매장 홍보, 관광 안내, SNS 공유에 활용할 수 있습니다. iPhone과 iPad에서는 Safari 사용을 권장합니다.",
+        voiceLang: "ko-KR",
+        voiceRate: 0.83,
+        voicePitch: 1
+      }
+    };
+
+    let currentLang = "ja";
+
+    function trackEvent(name) {
+      if (typeof gtag === "function") {
+        gtag("event", name, { app_name: "wagashi_ar_demo" });
+      }
+    }
+
+    function $(id) {
+      return document.getElementById(id);
+    }
+
+    function changeLanguage() {
+      currentLang = $("languageSelect").value;
+      const c = contents[currentLang];
+      document.documentElement.lang = c.htmlLang;
+      $("title").textContent = c.title;
+      $("mainText").textContent = c.mainText;
+      $("guideText").textContent = c.guideText;
+      $("setText").innerHTML = c.setText;
+      $("noteText").textContent = c.noteText;
+      $("playVoiceBtn").textContent = c.playLabel;
+      $("stopVoiceBtn").textContent = c.stopLabel;
+      $("setABtn").textContent = c.setALabel;
+      $("setBBtn").textContent = c.setBLabel;
+      trackEvent("change_language_" + currentLang);
+    }
+
+    function pickVoice(langCode) {
+      const voices = window.speechSynthesis ? speechSynthesis.getVoices() : [];
+      return voices.find(v => v.lang === langCode) ||
+        voices.find(v => v.lang && v.lang.toLowerCase().startsWith(langCode.slice(0, 2).toLowerCase())) ||
+        null;
+    }
+
+    function stopVoice() {
+      if ("speechSynthesis" in window) {
+        speechSynthesis.cancel();
+      }
+    }
+
+    function playVoice() {
+      if (!("speechSynthesis" in window)) {
+        alert("このブラウザは音声読み上げに対応していません。");
+        return;
+      }
+
+      stopVoice();
+      const c = contents[currentLang];
+      const utterance = new SpeechSynthesisUtterance(c.voiceText);
+      utterance.lang = c.voiceLang;
+      utterance.rate = c.voiceRate || 0.9;
+      utterance.pitch = c.voicePitch || 1.0;
+      utterance.volume = 1.0;
+
+      const voice = pickVoice(c.voiceLang);
+      if (voice) {
+        utterance.voice = voice;
+      }
+
+      speechSynthesis.speak(utterance);
+      trackEvent("play_voice_" + currentLang);
+    }
+
+    if ("speechSynthesis" in window) {
+      window.speechSynthesis.onvoiceschanged = function () {
+        speechSynthesis.getVoices();
+      };
+    }
+
+    document.addEventListener("DOMContentLoaded", changeLanguage);
+  </script>
+</body>
+</html>

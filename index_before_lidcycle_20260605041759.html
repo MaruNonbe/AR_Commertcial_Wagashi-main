@@ -1,0 +1,423 @@
+﻿<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>和菓子ARギフト A/Bセット</title>
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
+  <meta name="description" content="和菓子ギフトをスマートフォンのARで確認できるPR用デモです。音声ガイドとスクロール説明プレートに対応しています。">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-HM4JZPG0WX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag("js", new Date());
+    gtag("config", "G-HM4JZPG0WX");
+  </script>
+  <style>
+    :root {
+      color-scheme: light;
+      --brand: #2f7dbd;
+      --brand-dark: #1f5f92;
+      --accent: #b45309;
+      --ink: #1f2933;
+      --muted: #667085;
+      --line: #d8e2ef;
+      --bg: #f4f7fb;
+      --card: #fff;
+      --plate: rgba(15, 23, 42, 0.76);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans JP", "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, sans-serif;
+      background: radial-gradient(circle at top left, #fff8ed 0, #f4f7fb 36%, #eef7ff 100%);
+      color: var(--ink);
+      line-height: 1.75;
+    }
+    .hero {
+      background: linear-gradient(135deg, rgba(255,255,255,.94), rgba(239,247,255,.9));
+      border-bottom: 1px solid var(--line);
+    }
+    .container { max-width: 900px; margin: 0 auto; padding: 24px 18px 34px; }
+    .card {
+      background: rgba(255,255,255,.94);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 22px;
+      box-shadow: 0 10px 28px rgba(16, 24, 40, .08);
+    }
+    h1 { margin: 0 0 12px; font-size: clamp(1.65rem, 4vw, 2.45rem); line-height: 1.3; }
+    h2 { margin: 0 0 10px; font-size: 1.25rem; }
+    .lead { font-size: 1.05rem; margin-bottom: 0; }
+    .badge-row, .voice-row, .btn-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 18px 0; }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 32px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: #fff7ed;
+      border: 1px solid #fed7aa;
+      color: #9a3412;
+      font-size: .88rem;
+      font-weight: 700;
+    }
+    label { font-weight: 800; }
+    select, button, .ar-btn {
+      min-height: 44px;
+      border-radius: 8px;
+      border: 1px solid var(--brand);
+      padding: 10px 14px;
+      font-size: 1rem;
+    }
+    select { background: #fff; color: var(--ink); }
+    button, .ar-btn {
+      background: var(--brand);
+      color: #fff;
+      cursor: pointer;
+      text-decoration: none;
+      text-align: center;
+      font-weight: 800;
+    }
+    button.secondary { background: #fff; color: var(--brand); }
+    button.warm, .ar-btn.warm { background: var(--accent); border-color: var(--accent); }
+    button:hover, .ar-btn:hover { filter: brightness(.94); color: #fff; }
+    .section { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line); }
+    .set-description { background: #f7fbff; border-left: 4px solid var(--brand); padding: 14px 16px; border-radius: 8px; }
+    .note { color: var(--muted); font-size: .92rem; }
+    .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+    .mini-card { border: 1px solid var(--line); border-radius: 10px; padding: 14px; background: #fff; }
+    .mini-card h3 { margin: 0 0 8px; }
+    .floating-plate {
+      position: fixed;
+      left: 12px;
+      right: 12px;
+      bottom: calc(12px + env(safe-area-inset-bottom));
+      z-index: 20;
+      max-width: 860px;
+      margin: 0 auto;
+      border-radius: 18px;
+      background: var(--plate);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,.2);
+      box-shadow: 0 12px 32px rgba(0,0,0,.28);
+      backdrop-filter: blur(10px);
+      overflow: hidden;
+      transform: translateY(calc(100% - 46px));
+      transition: transform .25s ease;
+    }
+    .floating-plate.open { transform: translateY(0); }
+    .plate-head {
+      min-height: 46px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      cursor: pointer;
+      font-weight: 800;
+    }
+    .plate-body { padding: 0 14px 14px; }
+    .scroll-window {
+      height: 128px;
+      overflow: hidden;
+      border-radius: 12px;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.12);
+    }
+    .scroll-content {
+      padding: 12px;
+      white-space: pre-wrap;
+      line-height: 1.75;
+      animation: scrollText 24s linear infinite;
+    }
+    .floating-plate:hover .scroll-content,
+    .floating-plate.open.paused .scroll-content { animation-play-state: paused; }
+    @keyframes scrollText {
+      0% { transform: translateY(110%); }
+      92% { transform: translateY(-100%); }
+      100% { transform: translateY(-100%); }
+    }
+    model-viewer {
+      width: 100%;
+      height: min(62vh, 520px);
+      min-height: 340px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: radial-gradient(circle at center, #fff 0, #eef7ff 58%, #ddeaf7 100%);
+      --poster-color: transparent;
+      --progress-bar-color: var(--brand);
+    }
+    .model-tools {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 12px;
+      align-items: center;
+    }
+    .model-chip {
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: #eef7ff;
+      color: #1f5f92;
+      font-size: .86rem;
+      font-weight: 800;
+    }
+    .footer { text-align: center; color: var(--muted); font-size: .85rem; margin-top: 24px; padding-bottom: 90px; }
+    @media (max-width: 640px) {
+      .container { padding: 18px 12px 28px; }
+      .card { padding: 18px 14px; border-radius: 10px; }
+      .grid { grid-template-columns: 1fr; }
+      .voice-row, .btn-row { flex-direction: column; align-items: stretch; }
+      select, button, .ar-btn { width: 100%; }
+      .scroll-window { height: 116px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="container">
+      <h1 id="title">和菓子ARギフト A/Bセット</h1>
+      <p class="lead" id="mainText">日本の伝統的な和菓子ギフトを、スマートフォンのARで確認できるPR用デモです。贈答品のイメージ確認、店頭PR、観光案内、SNS投稿などに活用できます。</p>
+      <div class="badge-row" aria-label="特徴">
+        <span class="badge">ARギフト表示</span>
+        <span class="badge">音声ガイド</span>
+        <span class="badge">スクロール説明プレート</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="card" aria-label="和菓子ARデモ">
+      <div class="badge-row">
+        <label for="languageSelect">Language</label>
+        <select id="languageSelect" onchange="changeLanguage()">
+          <option value="ja">日本語</option>
+          <option value="en">English</option>
+        </select>
+      </div>
+
+      <p id="guideText">下のボタンからAセットまたはBセットを選ぶと、AR表示を開けます。iPhone / iPadではSafariでご利用ください。</p>
+
+      <div class="voice-row" aria-label="音声操作">
+        <button id="playVoiceBtn" type="button" onclick="playVoice()">音声ガイドを再生</button>
+        <button id="playAndOpenABtn" class="warm" type="button" onclick="playAndOpen('A')">音声を再生してAセットを見る</button>
+        <button id="stopVoiceBtn" class="secondary" type="button" onclick="stopVoice()">停止</button>
+      </div>
+
+            <div class="section">
+        <h2>3Dプレビュー / Android AR</h2>
+        <model-viewer
+          id="wagashiViewer"
+          src="Assets/models/wagashi_A_ar.glb"
+          ios-src="https://www.dropbox.com/scl/fi/5q835qy92gp4z1yizxg9s/wagashi_A.usdz?dl=1"
+          alt="和菓子ARギフト Aセットの3Dモデル"
+          ar
+          ar-modes="scene-viewer webxr quick-look"
+          ar-placement="floor"
+          ar-scale="fixed"
+          camera-controls
+          touch-action="pan-y"
+          shadow-intensity="0.8"
+          exposure="1.05"
+          camera-orbit="35deg 65deg 2.2m"
+          field-of-view="35deg">
+          <button slot="ar-button" class="ar-btn warm" style="position:absolute;left:50%;bottom:16px;transform:translateX(-50%);width:auto;">ARで見る</button>
+        </model-viewer>
+        <div class="model-tools" aria-label="表示モデル切り替え">
+          <button id="previewA" class="warm" type="button" onclick="setPreviewModel('A')">Aセットを表示</button>
+          <button id="previewB" type="button" onclick="setPreviewModel('B')">Bセットを表示</button>
+          <span class="model-chip">GLB追加済み / Android対応</span>
+        </div>
+      </div>
+<div class="section">
+        <h2>AR表示</h2>
+        <div class="btn-row">
+          <a id="setABtn" class="ar-btn warm" href="https://www.dropbox.com/scl/fi/5q835qy92gp4z1yizxg9s/wagashi_A.usdz?dl=1" onclick="trackEvent('open_ar_set_a')">Aセットを見る</a>
+          <a id="setBBtn" class="ar-btn" href="https://www.dropbox.com/scl/fi/kvt216g3yshp1p3ytsjin/wagashi_B.usdz?rlkey=g0z8bqhcqx86y9jpn1lkkyhgc&amp;st=ke6yomib&amp;dl=1" onclick="trackEvent('open_ar_set_b')">Bセットを見る</a>
+        </div>
+        <p class="note" id="arNote">ネイティブARビューア上にはHTMLプレートを直接重ねられないため、説明はこのページのプレートと音声で案内します。</p>
+      </div>
+
+      <div class="section grid">
+        <div class="mini-card">
+          <h3>Aセット</h3>
+          <p id="setAText">華やかな色合いの和菓子ギフトです。季節の贈り物や記念品のイメージ確認に適しています。</p>
+        </div>
+        <div class="mini-card">
+          <h3>Bセット</h3>
+          <p id="setBText">落ち着いた雰囲気の和菓子ギフトです。お茶席、観光土産、店頭展示の紹介に適しています。</p>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>改善点メモ</h2>
+        <p class="set-description" id="improvementText">GLBモデルを追加したため、ページ内3DプレビューとAndroid向けAR表示にも対応できます。商品名、価格、店舗情報、購入リンクを追加すると、実績ページや販促デモとしてさらに伝わりやすくなります。</p>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <p>Freedom / AR・WebAR制作デモ</p>
+    </footer>
+  </main>
+
+  <aside id="infoPlate" class="floating-plate open" aria-label="商品説明プレート">
+    <div class="plate-head" onclick="togglePlate()">
+      <span id="plateTitle">和菓子ARギフトの説明</span>
+      <span id="plateToggle">閉じる</span>
+    </div>
+    <div class="plate-body">
+      <div class="scroll-window">
+        <div id="plateText" class="scroll-content">和菓子ARギフトは、贈答品の見た目や雰囲気をスマートフォン上で確認できる販促用ARコンテンツです。Aセットは華やかで季節感のある構成、Bセットは落ち着いた印象の構成です。店頭での説明、観光土産の紹介、オンラインでの事前確認に活用できます。</div>
+      </div>
+    </div>
+  </aside>
+
+  <audio id="narrationAudio" src="Assets/audio/narration.mp3" preload="auto"></audio>
+
+  <script>
+    const contents = {
+      ja: {
+        htmlLang: "ja",
+        title: "和菓子ARギフト A/Bセット",
+        mainText: "日本の伝統的な和菓子ギフトを、スマートフォンのARで確認できるPR用デモです。贈答品のイメージ確認、店頭PR、観光案内、SNS投稿などに活用できます。",
+        guideText: "下のボタンからAセットまたはBセットを選ぶと、AR表示を開けます。iPhone / iPadではSafariでご利用ください。",
+        playLabel: "音声ガイドを再生",
+        playAndOpenLabel: "音声を再生してAセットを見る",
+        stopLabel: "停止",
+        setALabel: "Aセットを見る",
+        setBLabel: "Bセットを見る",
+        arNote: "ネイティブARビューア上にはHTMLプレートを直接重ねられないため、説明はこのページのプレートと音声で案内します。",
+        setAText: "華やかな色合いの和菓子ギフトです。季節の贈り物や記念品のイメージ確認に適しています。",
+        setBText: "落ち着いた雰囲気の和菓子ギフトです。お茶席、観光土産、店頭展示の紹介に適しています。",
+        improvementText: "GLBモデルを追加したため、ページ内3DプレビューとAndroid向けAR表示にも対応できます。商品名、価格、店舗情報、購入リンクを追加すると、実績ページや販促デモとしてさらに伝わりやすくなります。",
+        plateTitle: "和菓子ARギフトの説明",
+        plateText: "和菓子ARギフトは、贈答品の見た目や雰囲気をスマートフォン上で確認できる販促用ARコンテンツです。Aセットは華やかで季節感のある構成、Bセットは落ち着いた印象の構成です。店頭での説明、観光土産の紹介、オンラインでの事前確認に活用できます。",
+        close: "閉じる",
+        open: "説明"
+      },
+      en: {
+        htmlLang: "en",
+        title: "Wagashi AR Gift Set A / B",
+        mainText: "This demo lets visitors preview traditional Japanese sweets in AR on a smartphone. It can be used for gift previews, in-store promotion, tourism guidance, and social media sharing.",
+        guideText: "Tap Set A or Set B below to open the AR view. On iPhone or iPad, please use Safari.",
+        playLabel: "Play audio guide",
+        playAndOpenLabel: "Play audio and view Set A",
+        stopLabel: "Stop",
+        setALabel: "View Set A",
+        setBLabel: "View Set B",
+        arNote: "Native AR viewers cannot display this HTML overlay directly, so the product explanation is provided on this page through the plate and audio guide.",
+        setAText: "A colorful wagashi gift set suitable for seasonal gifts and commemorative items.",
+        setBText: "A calm and refined wagashi gift set suitable for tea gatherings, tourism souvenirs, and shop displays.",
+        improvementText: "GLB models have been added, enabling in-page 3D previews and Android AR support. Product names, prices, shop information, and purchase links would make this stronger as a sales demo.",
+        plateTitle: "Wagashi AR Gift Guide",
+        plateText: "The Wagashi AR Gift demo helps visitors preview the look and atmosphere of a gift set on a smartphone. Set A has a bright seasonal impression, while Set B offers a calmer refined style. It can support in-store explanations, tourism souvenir promotion, and online previews.",
+        close: "Close",
+        open: "Guide"
+      }
+    };
+
+    let currentLang = "ja";
+    const audio = document.getElementById("narrationAudio");
+
+    function trackEvent(name) {
+      if (typeof gtag === "function") {
+        gtag("event", name, { app_name: "wagashi_ar_demo" });
+      }
+    }
+
+    function $(id) { return document.getElementById(id); }
+
+    function setText(id, value, html = false) {
+      const el = $(id);
+      if (!el) return;
+      if (html) el.innerHTML = value;
+      else el.textContent = value;
+    }
+
+    function changeLanguage() {
+      currentLang = $("languageSelect").value;
+      const c = contents[currentLang];
+      document.documentElement.lang = c.htmlLang;
+      setText("title", c.title);
+      setText("mainText", c.mainText);
+      setText("guideText", c.guideText);
+      setText("playVoiceBtn", c.playLabel);
+      setText("playAndOpenABtn", c.playAndOpenLabel);
+      setText("stopVoiceBtn", c.stopLabel);
+      setText("setABtn", c.setALabel);
+      setText("setBBtn", c.setBLabel);
+      setText("arNote", c.arNote);
+      setText("setAText", c.setAText);
+      setText("setBText", c.setBText);
+      setText("improvementText", c.improvementText);
+      setText("plateTitle", c.plateTitle);
+      setText("plateText", c.plateText);
+      updatePlateToggle();
+      trackEvent("change_language_" + currentLang);
+    }
+
+    const modelSources = {
+      A: {
+        glb: "Assets/models/wagashi_A_ar.glb",
+        usdz: "https://www.dropbox.com/scl/fi/5q835qy92gp4z1yizxg9s/wagashi_A.usdz?dl=1",
+        alt: "???AR??? A????3D???"
+      },
+      B: {
+        glb: "Assets/models/wagashi_B_ar.glb",
+        usdz: "https://www.dropbox.com/scl/fi/kvt216g3yshp1p3ytsjin/wagashi_B.usdz?rlkey=g0z8bqhcqx86y9jpn1lkkyhgc&st=ke6yomib&dl=1",
+        alt: "???AR??? B????3D???"
+      }
+    };
+
+    function setPreviewModel(key) {
+      const viewer = $("wagashiViewer");
+      if (!viewer || !modelSources[key]) return;
+      viewer.setAttribute("src", modelSources[key].glb);
+      viewer.setAttribute("ios-src", modelSources[key].usdz);
+      viewer.setAttribute("alt", modelSources[key].alt);
+      $("previewA")?.classList.toggle("warm", key === "A");
+      $("previewB")?.classList.toggle("warm", key === "B");
+      trackEvent("preview_model_" + key.toLowerCase());
+    }
+
+    function playVoice() {
+      audio.currentTime = 0;
+      audio.play().catch(() => {
+        alert(currentLang === "ja" ? "音声を再生できませんでした。ブラウザの設定をご確認ください。" : "Audio playback failed. Please check your browser settings.");
+      });
+      trackEvent("play_audio_" + currentLang);
+    }
+
+    function stopVoice() {
+      audio.pause();
+      audio.currentTime = 0;
+    }
+
+    function playAndOpen(setName) {
+      playVoice();
+      const target = setName === "B" ? $("setBBtn") : $("setABtn");
+      setTimeout(() => {
+        window.location.href = target.href;
+      }, 700);
+    }
+
+    function togglePlate() {
+      const plate = $("infoPlate");
+      plate.classList.toggle("open");
+      updatePlateToggle();
+    }
+
+    function updatePlateToggle() {
+      const c = contents[currentLang];
+      const open = $("infoPlate").classList.contains("open");
+      setText("plateToggle", open ? c.close : c.open);
+    }
+
+    document.addEventListener("DOMContentLoaded", changeLanguage);
+  </script>
+</body>
+</html>
+
+
