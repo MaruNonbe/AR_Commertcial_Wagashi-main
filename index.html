@@ -293,6 +293,7 @@
         improvementText: "GLBモデルを追加したため、ページ内3DプレビューとAndroid向けAR表示にも対応できます。商品名、価格、店舗情報、購入リンクを追加すると、実績ページや販促デモとしてさらに伝わりやすくなります。",
         plateTitle: "和菓子ARギフトの説明",
         plateText: "和菓子ARギフトは、贈答品の見た目や雰囲気をスマートフォン上で確認できる販促用ARコンテンツです。Aセットは華やかで季節感のある構成、Bセットは落ち着いた印象の構成です。店頭での説明、観光土産の紹介、オンラインでの事前確認に活用できます。",
+        voiceText: "ご覧いただきありがとうございます。こちらは、和菓子ギフトをスマートフォンのARで確認できるデモコンテンツです。Aセットは華やかで季節感のある構成、Bセットは落ち着いた上品な雰囲気を表現しています。店頭での説明、観光土産の紹介、オンラインでの事前確認などに活用できます。画面下のボタンから、AセットまたはBセットをARで表示できます。",
         close: "閉じる",
         open: "説明"
       },
@@ -312,6 +313,7 @@
         improvementText: "GLB models have been added, enabling in-page 3D previews and Android AR support. Product names, prices, shop information, and purchase links would make this stronger as a sales demo.",
         plateTitle: "Wagashi AR Gift Guide",
         plateText: "The Wagashi AR Gift demo helps visitors preview the look and atmosphere of a gift set on a smartphone. Set A has a bright seasonal impression, while Set B offers a calmer refined style. It can support in-store explanations, tourism souvenir promotion, and online previews.",
+        voiceText: "Thank you for viewing this demo. This Wagashi AR Gift experience lets visitors preview Japanese sweet gift sets on a smartphone. Set A presents a bright seasonal impression, while Set B offers a calm and refined style. The content can support in-store explanations, tourism souvenir promotion, online previews, and social media sharing. Tap Set A or Set B to open the AR view.",
         close: "Close",
         open: "Guide"
       }
@@ -319,6 +321,7 @@
 
     let currentLang = "ja";
     const audio = document.getElementById("narrationAudio");
+    let currentUtterance = null;
 
     function trackEvent(name) {
       if (typeof gtag === "function") {
@@ -381,15 +384,35 @@
       trackEvent("preview_model_" + key.toLowerCase());
     }
 
+    function selectVoice(lang) {
+      if (!("speechSynthesis" in window)) return null;
+      const voices = window.speechSynthesis.getVoices();
+      const prefix = lang === "ja" ? "ja" : "en";
+      return voices.find((voice) => voice.lang && voice.lang.toLowerCase().startsWith(prefix)) || null;
+    }
+
     function playVoice() {
-      audio.currentTime = 0;
-      audio.play().catch(() => {
-        alert(currentLang === "ja" ? "音声を再生できませんでした。ブラウザの設定をご確認ください。" : "Audio playback failed. Please check your browser settings.");
-      });
+      stopVoice();
+      const c = contents[currentLang];
+      if ("speechSynthesis" in window) {
+        currentUtterance = new SpeechSynthesisUtterance(c.voiceText);
+        currentUtterance.lang = currentLang === "ja" ? "ja-JP" : "en-US";
+        currentUtterance.rate = currentLang === "ja" ? 0.95 : 0.92;
+        currentUtterance.pitch = 1;
+        const voice = selectVoice(currentLang);
+        if (voice) currentUtterance.voice = voice;
+        window.speechSynthesis.speak(currentUtterance);
+      } else {
+        alert(currentLang === "ja" ? "このブラウザは音声読み上げに対応していません。" : "This browser does not support text-to-speech audio.");
+      }
       trackEvent("play_audio_" + currentLang);
     }
 
     function stopVoice() {
+      if ("speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
+      }
+      currentUtterance = null;
       audio.pause();
       audio.currentTime = 0;
     }
@@ -414,10 +437,15 @@
       setText("plateToggle", open ? c.close : c.open);
     }
 
+    if ("speechSynthesis" in window) {
+      window.speechSynthesis.onvoiceschanged = () => selectVoice(currentLang);
+    }
+
     document.addEventListener("DOMContentLoaded", changeLanguage);
   </script>
 </body>
 </html>
+
 
 
 
